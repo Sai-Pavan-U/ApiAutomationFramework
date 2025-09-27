@@ -78,39 +78,56 @@ import java.util.Properties;
 
 public class ConfigManager {
 
-	// Load properties once at class initialization from test classpath:
-	// src/test/resources/config/config.properties
-	private static final Properties PROPS = new Properties();
+    // Load properties once at class initialization from test classpath:
+    // Supports environment-specific configs via system property: -Denv=qa
+    private static final Properties PROPS = new Properties();
 
-	static {
-		// Try to load from the classpath first
-		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/config.properties");
+    static {
+        // Get environment from system property (default to "dev" if not specified)
+        String env = System.getProperty("env", "dev");
+        String configFile = "config/config." + env + ".properties";
 
-		if (in == null) {
-			throw new RuntimeException("ConfigManager: could not find config.properties in classpath");
-		}
-		try {
-			PROPS.load(in);
-		} catch (IOException e) {
-			System.err.println(
-					"ConfigManager: could not find config.properties in classpath or project path: " + e.getMessage()); // Log
-																														// error
-		}
+        // Try environment-specific config first
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
 
-	}
+        // Fallback to default config.properties if environment-specific not found
+        if (in == null) {
+            System.out.println("ConfigManager: Environment-specific config '" + configFile
+                    + "' not found, trying default config.properties");
+            in = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/config.properties");
+        } else {
+            System.out.println("ConfigManager: Loading configuration from " + configFile);
+        }
 
-	// Prevent instantiation
-	private ConfigManager() {
-	}
+        if (in == null) {
+            throw new RuntimeException(
+                    "ConfigManager: could not find config.properties or " + configFile + " in classpath");
+        }
 
-	public static String getProperty(String key) {
-		return PROPS.getProperty(key);
-	}
+        try {
+            PROPS.load(in);
+            in.close();
+        } catch (IOException e) {
+            System.err.println(
+                    "ConfigManager: could not load configuration file: " + e.getMessage());
+            throw new RuntimeException("ConfigManager: Failed to load configuration", e);
+        }
+    }
 
-	// Keep a simple main for manual debugging if needed
-	public static void main(String[] args) {
-		System.out.println("Loaded config properties: ");
-		System.out.println("BASE_URI=" + getProperty("BASE_URI"));
-	}
+    // Prevent instantiation
+    private ConfigManager() {
+    }
+
+    public static String getProperty(String key) {
+        return PROPS.getProperty(key);
+    }
+
+    // Keep a simple main for manual debugging if needed
+    public static void main(String[] args) {
+        String env = System.getProperty("env", "dev");
+        System.out.println("Current environment: " + env);
+        System.out.println("Loaded config properties: ");
+        System.out.println("BASE_URI=" + getProperty("BASE_URI"));
+    }
 
 }

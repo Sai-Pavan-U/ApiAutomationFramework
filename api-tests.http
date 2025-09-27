@@ -1,29 +1,24 @@
 ### Sample API Requests for Testing
 
-# Set environment variable
-# @name = login
+# Environment Variables
+@baseUrl = http://64.227.160.186:9000/v1
 
 ### Login API Test
 POST {{baseUrl}}/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "testuser",
-    "password": "testpass"
+    "username": "iamfd",
+    "password": "password"
 }
 
 ###
 
-### Get User Details
-GET {{baseUrl}}/user/details HTTP/1.1
-Authorization: Bearer {{login.response.body.token}}
+### Get User Details (requires valid token from login)
+GET {{baseUrl}}/userDetails HTTP/1.1
 Content-Type: application/json
 
 ###
-
-### Environment Variables (uncomment the one you want to use)
-# @baseUrl = https://api.dev.example.com
-@baseUrl = https://api.qa.example.com
 
 ### Sample Test with Query Parameters
 GET {{baseUrl}}/users?page=1&limit=10 HTTP/1.1
@@ -31,7 +26,7 @@ Content-Type: application/json
 
 ###
 
-### Sample POST with JSON body
+### Sample POST with JSON body  
 POST {{baseUrl}}/users HTTP/1.1
 Content-Type: application/json
 
