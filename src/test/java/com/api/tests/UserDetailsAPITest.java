@@ -6,8 +6,8 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import org.testng.annotations.Test;
 
+import com.api.constants.Roles;
 import com.api.utils.AuthTokenProvider;
-import com.api.utils.Role;
 
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
@@ -19,7 +19,7 @@ public class UserDetailsAPITest {
     @Test
     public void userDetailsAPITest() {
         Header authHeader = new Header("Authorization",
-                AuthTokenProvider.getAuthToken(Role.FRONT_DESK));
+                AuthTokenProvider.getAuthToken(Roles.FD));
 
         System.out.println("UserDetailsAPITest");
 
