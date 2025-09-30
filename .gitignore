@@ -1,2 +1,45 @@
+# Build directories
 /target/
 test-output/
+
+# Hidden files and directories (starting with .)
+.*
+!.gitignore
+!.gitkeep
+
+# IDE and Editor files
+.vscode/
+.idea/
+.eclipse/
+.settings/
+.project
+.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+hs_err_pid*
+
+# Maven specific
+.mvn/
+mvnw
+mvnw.cmd
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
