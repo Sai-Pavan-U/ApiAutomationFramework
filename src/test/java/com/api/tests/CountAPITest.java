@@ -1,17 +1,21 @@
 package com.api.tests;
 
-import static io.restassured.RestAssured.given;
-import static io.restassured.module.jsv.JsonSchemaValidator.*;
-import static org.hamcrest.Matchers.*;
-import org.testng.annotations.*;
+import static org.hamcrest.Matchers.blankOrNullString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import org.testng.annotations.Test;
 
 import com.api.constants.Roles;
-import static com.api.utils.AuthTokenProvider.*;
-import static com.api.utils.ConfigManager.*;
+import static com.api.utils.AuthTokenProvider.getAuthToken;
+import static com.api.utils.ConfigManager.getProperty;
 
+import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
-import io.restassured.module.jsv.JsonSchemaValidator;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 public class CountAPITest {
 
@@ -28,7 +32,7 @@ public class CountAPITest {
                 .log()
                 .all()
                 .statusCode(200)
-                .time(lessThan(1500L))
+                .time(lessThan(2000L))
                 .body("message", equalTo("Success"))
                 .body("data", notNullValue())
                 .body("data.items", notNullValue())

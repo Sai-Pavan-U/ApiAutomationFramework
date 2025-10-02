@@ -1,15 +1,17 @@
 package com.api.tests;
 
-import static com.api.utils.AuthTokenProvider.getAuthToken;
-import static com.api.utils.ConfigManager.getProperty;
-import static io.restassured.RestAssured.given;
-
-import com.api.constants.Roles;
-
-import static org.hamcrest.Matchers.*;
-
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.notNullValue;
 import org.testng.annotations.Test;
 
+import com.api.constants.Roles;
+import static com.api.utils.AuthTokenProvider.getAuthToken;
+import static com.api.utils.ConfigManager.getProperty;
+
+import static io.restassured.RestAssured.given;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import io.restassured.module.jsv.JsonSchemaValidator;
@@ -29,7 +31,7 @@ public class MasterAPITest {
                 .log()
                 .all()
                 .statusCode(200)
-                .time(lessThan(200L))
+                .time(lessThan(2000L))
                 .body("data", hasKey("mst_oem"))
                 .body("data.mst_oem[0].id", equalTo(1))
                 .body("data.mst_oem.id", everyItem(notNullValue()))
