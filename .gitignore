@@ -6,9 +6,10 @@ test-output/
 .*
 !.gitignore
 !.gitkeep
+!.github/
+!.vscode/
 
-# IDE and Editor files
-.vscode/
+# IDE and Editor files - Eclipse only
 .idea/
 .eclipse/
 .settings/
