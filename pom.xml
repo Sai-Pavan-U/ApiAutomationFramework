@@ -5,7 +5,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <properties>
     <!-- Default TestNG suite file - can be overridden via -DSuiteXmlFile=filename.xml -->
-    <SuiteXmlFile>src/test/resources/testng.xml</SuiteXmlFile>
+    <SuiteXmlFile>testng.xml</SuiteXmlFile>
 
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
@@ -23,7 +23,7 @@
         <configuration>
             <!-- Dynamic TestNG XML suite file - supports multiple formats -->
             <suiteXmlFiles>
-                <suiteXmlFile>${SuiteXmlFile}</suiteXmlFile>
+                <suiteXmlFile>src/test/resources/${SuiteXmlFile}</suiteXmlFile>
             </suiteXmlFiles>
             
             <!-- Enable system properties to be passed to test execution -->

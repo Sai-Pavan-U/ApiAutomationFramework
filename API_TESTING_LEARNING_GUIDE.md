@@ -132,10 +132,12 @@ src/test/resources/config/
 └── config.uat.properties  # UAT environment
 ```
 
-### 🎤 Interview Questions & Scenarios
+### 🎤 Interview Questions & Real-Time Scenarios
 
 <details>
-<summary><strong>Scenario-Based Interview Questions</strong></summary>
+<summary><strong>Comprehensive Interview Q&A and Situational Scenarios</strong></summary>
+
+#### 🏗️ Architecture & Design Questions
 
 **Q1: "How would you handle configuration management in a multi-environment API testing framework?"**
 
@@ -145,13 +147,66 @@ src/test/resources/config/
 
 **Your Answer:** "Our ConfigManager has a two-tier fallback strategy. First, it tries to load the environment-specific config. If that fails, it attempts to load the default config.properties. If both fail, it throws a RuntimeException with a clear error message. This fail-fast approach ensures configuration issues are caught early rather than causing mysterious test failures later."
 
+#### 🔧 Technical Implementation Questions
+
 **Q3: "How do you ensure thread safety in your configuration management?"**
 
 **Your Answer:** "We use a static initialization block that executes only once when the class is first loaded. The Properties object is marked as `static final`, making it immutable after initialization. Since all our config values are read-only during test execution, we don't need additional synchronization mechanisms."
 
-**Q4: "Describe a scenario where your fallback configuration saved the day."**
+**Q4: "Walk me through your approach to handling different base URIs across environments."**
 
-**Your Answer:** "During a critical deployment, our QA environment config file got corrupted. Instead of all tests failing with unclear errors, our ConfigManager automatically fell back to the default configuration, allowing most tests to continue running. This gave us time to fix the QA config while maintaining test coverage."
+**Your Answer:** "Each environment has its own properties file: `config.dev.properties` has `BASE_URI=http://dev-api.company.com`, while `config.qa.properties` has `BASE_URI=http://qa-api.company.com`. The ConfigManager automatically loads the correct URI based on the `-Denv` parameter, so the same test code works across all environments without hardcoding URLs."
+
+#### 🎯 Real-Time Problem Solving Scenarios
+
+**Scenario 1: Emergency Production Issue**
+**Interviewer:** "Your production deployment failed at 2 AM. The team suspects configuration issues. How would your ConfigManager help troubleshoot this?"
+
+**Your Answer:** "First, I'd check if our ConfigManager's fallback mechanism activated by looking for the 'Environment-specific config not found, trying default' message. Then I'd verify the properties file integrity and compare production config with our tested QA config. Our static initialization would have failed fast if there were syntax errors, so I'd look for network-related configuration mismatches like wrong database URLs or API endpoints."
+
+**Scenario 2: New Environment Setup**
+**Interviewer:** "Your company is adding a new staging environment. How would you integrate it into your existing framework?"
+
+**Your Answer:** "I'd create a new `config.staging.properties` file with staging-specific values. The beauty of our ConfigManager is that no code changes are needed - just run `mvn test -Denv=staging` and it automatically picks up the new configuration. I'd copy from `config.qa.properties` as a template and update BASE_URI, database connections, and any staging-specific settings."
+
+**Scenario 3: Configuration Encryption**
+**Interviewer:** "Security team mandates that passwords in config files must be encrypted. How would you modify ConfigManager?"
+
+**Your Answer:** "I'd extend ConfigManager with a decryption method. The static initialization would remain the same, but I'd add a `getSecureProperty()` method that decrypts values marked with a prefix like `ENC()`. For example: `DB_PASSWORD=ENC(encrypted_value)`. This maintains backward compatibility while adding security for sensitive values."
+
+#### 🚨 Troubleshooting Scenarios
+
+**Scenario 4: Race Condition Investigation**
+**Interviewer:** "Tests are failing intermittently with NullPointerException on getProperty(). What's your investigation approach?"
+
+**Your Answer:** "Since our ConfigManager uses static initialization, this shouldn't happen after the class loads. I'd check if multiple threads are somehow triggering class loading simultaneously, or if there's a classpath issue causing the properties file to not load. I'd add debug logging in the static block and verify the PROPS object is properly initialized before any test execution begins."
+
+**Scenario 5: Performance Optimization**
+**Interviewer:** "Your test suite takes too long to start. Each test method calls getProperty() multiple times. How would you optimize?"
+
+**Your Answer:** "I'd implement property caching in ConfigManager. Instead of accessing the Properties object every time, I'd create static final String constants for frequently used values like BASE_URI during initialization. For dynamic properties, I'd keep the current approach, but for static ones, I'd pre-load them: `private static final String BASE_URI = PROPS.getProperty('BASE_URI');`"
+
+#### 🔄 Maintenance & Evolution Questions
+
+**Q5: "How would you handle configuration versioning as your API framework grows?"**
+
+**Your Answer:** "I'd implement a configuration validation mechanism in the static block that checks for required properties and their formats. I'd also add a CONFIG_VERSION property to track schema changes. If a config file is missing required properties or has an incompatible version, the framework would fail with a detailed error message listing what's missing or incompatible."
+
+**Q6: "Describe a scenario where your fallback configuration saved the day."**
+
+**Your Answer:** "During a critical deployment, our QA environment config file got corrupted due to a deployment script error. Instead of all tests failing with unclear errors, our ConfigManager automatically fell back to the default configuration, allowing most tests to continue running. This gave us time to fix the QA config while maintaining continuous integration. The fallback mechanism provided us with a 4-hour window to resolve the issue without blocking the entire development team."
+
+#### 💡 Advanced Scenarios
+
+**Scenario 6: Multi-Region Testing**
+**Interviewer:** "Your company expands to multiple AWS regions. How would you handle region-specific configurations?"
+
+**Your Answer:** "I'd extend the environment concept to include regions: `config.qa-us-east.properties`, `config.qa-eu-west.properties`. The ConfigManager would parse a compound environment parameter like `-Denv=qa-us-east`. I'd implement a hierarchical fallback: region-specific → environment-specific → default, ensuring maximum flexibility while maintaining simplicity."
+
+**Scenario 7: Dynamic Configuration Updates**
+**Interviewer:** "What if you need to update configuration during test execution without restarting?"
+
+**Your Answer:** "For dynamic updates, I'd implement a `refreshConfiguration()` method that reloads the properties file. However, this breaks the immutability principle, so I'd use it sparingly and ensure thread safety with synchronized blocks. For most scenarios, I'd recommend environment variables for truly dynamic values and keep the static initialization for stable configuration."
 
 </details>
 
@@ -207,10 +262,12 @@ switch (role) {
 }
 ```
 
-### 🎤 Interview Questions & Scenarios
+### 🎤 Interview Questions & Real-Time Scenarios
 
 <details>
-<summary><strong>Scenario-Based Interview Questions</strong></summary>
+<summary><strong>Comprehensive Interview Q&A and Situational Scenarios</strong></summary>
+
+#### 🔧 Enum Design & Implementation Questions
 
 **Q1: "Why did you choose enums over string constants for roles?"**
 
@@ -220,13 +277,61 @@ switch (role) {
 
 **Your Answer:** "I'd add the new role to the Roles enum, like `ADMIN`, then update the switch case in AuthTokenProvider to map it to appropriate credentials. The enum ensures I can't forget to handle the new role - if I miss it in the switch case, I'll get a compilation warning about incomplete switch statements."
 
+#### 🎯 Real-Time Problem Solving Scenarios
+
+**Scenario 1: Production Role Addition Emergency**
+**Interviewer:** "It's Friday evening, and urgent requirement comes in to add a new MANAGER role for weekend testing. Walk me through your process."
+
+**Your Answer:** "First, I'd add `MANAGER` to the Roles enum. The compiler would immediately show me all places needing updates - mainly the switch case in AuthTokenProvider. I'd add the new case: `case MANAGER -> user = new UserCredentials('iammanager', 'password');`. I'd run a quick test to ensure the new role authenticates properly, then commit and deploy. The enum pattern makes this a 5-minute change instead of hunting through string constants."
+
+**Scenario 2: Role Consolidation Project**
+**Interviewer:** "Management wants to consolidate roles - merge QC and ENG into a single QUALITY role. How do you handle this without breaking existing tests?"
+
+**Your Answer:** "I'd implement a phased approach. First, add the new QUALITY role to the enum. In AuthTokenProvider, I'd map QUALITY to appropriate credentials. Then I'd update tests gradually from QC/ENG to QUALITY. The enum approach allows me to deprecate QC and ENG by keeping them in the enum but adding documentation comments, ensuring existing tests continue working during the transition."
+
+#### 🏗️ Architecture & Design Questions
+
 **Q3: "What if you need roles with additional properties like permissions?"**
 
 **Your Answer:** "Currently, our Roles enum uses simple constants for basic role identification. If we needed additional properties, I'd refactor to include fields and constructors: `FD('Front Desk', 'basic_permissions')`. However, for our current authentication needs, simple constants work perfectly and keep the code clean."
 
-**Q4: "Describe a scenario where enum type safety prevented a bug."**
+**Q4: "How would you handle role hierarchy or inheritance?"**
 
-**Your Answer:** "During development, a teammate tried to pass `'fd'` (lowercase) as a role parameter. Since our method expects `Roles.FD`, the compiler immediately flagged this as a type mismatch. With string constants, this would have compiled but caused a runtime authentication failure in production."
+**Your Answer:** "I'd add a hierarchy method to the enum: `public boolean hasPermission(Permission permission)`. Each role would define its permissions, and I could check `if (role.hasPermission(Permission.READ_USERS))`. This keeps the enum pattern while adding sophisticated permission checking."
+
+#### 🚨 Troubleshooting Scenarios
+
+**Scenario 3: Authentication Failure Investigation**
+**Interviewer:** "Tests are failing with 'Unsupported role' exceptions. The logs show the role exists in the enum. What's your debugging approach?"
+
+**Your Answer:** "This suggests a case sensitivity or enum comparison issue. I'd first verify the exact role being passed - maybe there's whitespace or case mismatch. I'd add debug logging in the switch case to see exactly what role value is received. I'd also check if there's any enum serialization/deserialization happening that might corrupt the role value. The switch case with enum should be bulletproof, so the issue is likely in how the role is being passed to the method."
+
+**Scenario 4: Performance Optimization Challenge**
+**Interviewer:** "Your test suite creates thousands of tokens. Each call to getAuthToken() goes through the switch case. How would you optimize?"
+
+**Your Answer:** "I'd implement role-to-credentials caching using a static Map initialized during class loading: `private static final Map<Roles, UserCredentials> ROLE_CREDENTIALS = Map.of(FD, new UserCredentials('iamfd', 'password'), ...);`. Then the switch case becomes `UserCredentials user = ROLE_CREDENTIALS.get(role);`. This maintains the clarity while improving performance for high-volume test execution."
+
+#### 🔄 Evolution & Maintenance Questions
+
+**Q5: "How would you handle external role management integration?"**
+
+**Your Answer:** "If roles needed to come from an external system, I'd keep the enum for type safety but modify AuthTokenProvider to fetch credentials dynamically. The enum would become role identifiers, and I'd add a `RoleCredentialsProvider` interface that could be implemented for database, LDAP, or API-based credential resolution. This maintains compile-time safety while adding runtime flexibility."
+
+**Q6: "Describe a scenario where enum type safety prevented a bug."**
+
+**Your Answer:** "During development, a teammate tried to pass `'fd'` (lowercase) as a role parameter. Since our method expects `Roles.FD`, the compiler immediately flagged this as a type mismatch. With string constants, this would have compiled but caused a runtime authentication failure in production. The enum caught this during code review, preventing a potential production authentication issue."
+
+#### 💡 Advanced Design Scenarios
+
+**Scenario 5: Multi-Tenant Application Support**
+**Interviewer:** "Your application needs to support multiple tenants with different role structures. How would you evolve the Roles enum?"
+
+**Your Answer:** "I'd create a tenant-aware role system. Each enum constant would include tenant context: `FD_TENANT_A`, `FD_TENANT_B`, or use a composite pattern with `Role(RoleType.FD, Tenant.A)`. The AuthTokenProvider switch case would handle tenant-specific credential mapping. This maintains type safety while supporting multi-tenancy."
+
+**Scenario 6: Role-Based Test Categorization**
+**Interviewer:** "You need to run different test suites based on roles - admin tests, user tests, etc. How would you leverage the Roles enum?"
+
+**Your Answer:** "I'd add TestNG groups to tests and use the Roles enum to determine groups: `@Test(groups = {Roles.ADMIN.getTestGroup()})`. The enum could have a `getTestGroup()` method returning appropriate group names. This would allow running `mvn test -Dgroups=admin-tests` to execute only admin-related tests, using the enum as the source of truth for role categorization."
 
 </details>
 

@@ -1,12 +1,20 @@
 {
     "version": "0.2.0",
     "configurations": [
-        
-
-
-
-
-
+        {
+            "type": "java",
+            "name": "ConfigManagerPractice",
+            "request": "launch",
+            "mainClass": "com.api.utils.ConfigManagerPractice",
+            "projectName": "ApiAutomationFramework"
+        },
+        {
+            "type": "java",
+            "name": "AuthTokenProvider",
+            "request": "launch",
+            "mainClass": "com.api.utils.AuthTokenProvider",
+            "projectName": "ApiAutomationFramework"
+        },
         {
             "type": "java",
             "name": "Run Current Test Class",
