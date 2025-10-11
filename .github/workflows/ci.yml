@@ -30,11 +30,6 @@ on:
         - smoke-tests.xml
         - regression-tests.xml
 
-env:
-  # Default environment for scheduled and push/PR runs
-  DEFAULT_ENVIRONMENT: qa
-  DEFAULT_TEST_SUITE: testng.xml
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -49,18 +44,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     
-    - name: Determine Test Environment
-      id: test-config
-      run: |
-        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-          echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
-          echo "test_suite=${{ inputs.test_suite }}" >> $GITHUB_OUTPUT
-        else
-          echo "environment=${{ env.DEFAULT_ENVIRONMENT }}" >> $GITHUB_OUTPUT
-          echo "test_suite=${{ env.DEFAULT_TEST_SUITE }}" >> $GITHUB_OUTPUT
-        fi
-        echo "Selected Environment: ${{ steps.test-config.outputs.environment }}"
-        echo "Selected Test Suite: ${{ steps.test-config.outputs.test_suite }}"
     
     - name: Execute Test Automation Framework
       run: mvn clean test -DsuiteXmlFile=${{ steps.test-config.outputs.test_suite }} -Denv=${{ steps.test-config.outputs.environment }}
@@ -69,15 +52,6 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4.6.2
       with:
-        name: SureFire Report - ${{ steps.test-config.outputs.environment }}
+        name: SureFire Report
         path: target/surefire-reports/
         retention-days: 10
-    
-    - name: Test Summary
-      if: always()
-      run: |
-        echo "## Test Execution Summary" >> $GITHUB_STEP_SUMMARY
-        echo "- **Environment:** ${{ steps.test-config.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Test Suite:** ${{ steps.test-config.outputs.test_suite }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
