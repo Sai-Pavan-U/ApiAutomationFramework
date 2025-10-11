@@ -46,7 +46,9 @@ jobs:
     
     
     - name: Execute Test Automation Framework
-      run: mvn clean test -DsuiteXmlFile=${{ steps.test-config.outputs.test_suite }} -Denv=${{ steps.test-config.outputs.environment }}
+      run: mvn clean test 
+            -DsuiteXmlFile=${{ steps.test-config.outputs.test_suite }}
+            -Denv=${{ steps.test-config.outputs.environment }}
     
     - name: Upload Test Results
       if: always()
